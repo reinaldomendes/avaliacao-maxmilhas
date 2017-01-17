@@ -10,6 +10,13 @@ set_exception_handler(function () {
 });
 
 require __DIR__.'/../vendor/autoload.php';
+
+/*
+load .env file inside a root folder
+*/
+$dotenv = new Dotenv\Dotenv(__DIR__.'/../');
+$dotenv->load();
+
 require __DIR__.'/functions/helpers.php';
 require __DIR__.'/di/registers.php';
 

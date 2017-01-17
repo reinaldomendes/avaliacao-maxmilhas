@@ -45,3 +45,34 @@ $di->bind('View', function ($name) use ($di) {
 
     return $result;
 });
+
+/*Database connection*/
+$di->bindSingleton('PDO', function () {
+  $databaseConfig = include __DIR__.'/../../database/config/connection.php';
+  $env = getenv('DB_CONNECTION');
+  $dbParams = $databaseConfig[$env];
+  $dsn = $dbParams['driver'].
+        ':host='.$dbParams['host'].
+        ((!empty($dbParams['port'])) ? (';port='.$dbParams['port']) : '').
+        ';dbname='.$dbParams['schema'];
+
+    return new \PDO($dsn, $dbParams['username'], $dbParams['password']);
+
+});
+
+/*
+* PhotoDao
+*/
+$di->bind('PhotoDao', function () use ($di) {
+    return new App\Dao\PhotoDao($di->make('PDO'));
+});
+
+$di->bind('PhotoRepository', function () use ($di) {
+    $repository = new \App\Repository\PhotoRepository($di->make('PhotoDao'), function ($values) use ($di) {
+        return $di->make('Photo', [$values]);
+    });
+
+    return $repository;
+});
+
+$di->bind('Photo', \App\Models\Photo::class);

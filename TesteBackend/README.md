@@ -30,4 +30,3 @@ O que será avaliado?
 - Capacidade de abstração do problema
 - Teste Unitário
 - Documentação
-
