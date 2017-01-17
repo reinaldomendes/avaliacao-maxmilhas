@@ -71,7 +71,7 @@ class View
      */
     public function __toString()
     {
-        return $this->render();
+        return (string) $this->render();
     }
     /**
      * @return string

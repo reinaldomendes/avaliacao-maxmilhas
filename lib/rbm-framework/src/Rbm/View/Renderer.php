@@ -4,6 +4,10 @@ namespace Rbm\View;
 
 class Renderer
 {
+    /*
+    * do not use inside vies scripts
+    */
+    protected $__extends__ = null;
     /**
      * Render view script.
      * @param Rbm\View\View $view
@@ -17,8 +21,12 @@ class Renderer
         if (!is_scalar($result)) {
             echo $result;
         }
+        $result = ob_get_clean();
+        if (is_callable($this->__extends__)) {
+            $result = call_user_func_array($this->__extends__, [$result]);
+        }
 
-        return ob_get_clean();
+        return $result;
     }
 
     /* Helper functions to script file.
@@ -40,6 +48,13 @@ class Renderer
      */
     public function partial($name, array $params)
     {
-        return di()->make('View', [$name])->with($params);
+        return  di()->make('View', [$name])->with($params);
+    }
+
+    public function extend($name, array $params)
+    {
+        $this->__extends__ = function ($result) use ($name, $params) {
+            return di()->make('View', [$name])->with(array_merge($params, ['content' => $result]));
+        };
     }
 }
