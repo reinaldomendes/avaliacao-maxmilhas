@@ -3,6 +3,7 @@
 namespace Rbm\Http;
 
 use Rbm\Http\Controller;
+use Rbm\Http\Dispatcher\Exception as DispatcherException;
 
 class Dispatcher
 {
@@ -105,7 +106,7 @@ class Dispatcher
             $this->dispatchControllerString($this->controller);
         } else {
             $s = print_r($this->controller, true);
-            throw new \Exception("Controller is not a callable or valid string '{$s}'");
+            throw new DispatcherException("Controller is not a callable or valid string '{$s}'");
         }
 
         return $this->response;
@@ -120,16 +121,16 @@ class Dispatcher
     {
         $arrController = explode('@', $controller);
         if (count($arrController) < 2) {
-            throw new \Exception("Action not found on a route string '{$this->routeString}'");
+            throw new DispatcherException("Action not found on a route string '{$this->routeString}'");
         }
         $class = rtrim($this->controllerNamespace, '\\').'\\'.$arrController[0];
         if (!class_exists($class)) {
-            throw new \Exception("Controller  '{$arrController[0]}' not found at {$this->controllerNamespace}");
+            throw new DispatcherException("Controller  '{$arrController[0]}' not found at {$this->controllerNamespace}");
         }
         $method = $arrController[1];
         $controllerObject = new $class($this->request, $this->response);
         if (!method_exists($controllerObject, $method)) {
-            throw new \Exception("Method  '{$method}' not found at controller '{$arrController[0]}'");
+            throw new DispatcherException("Method  '{$method}' not found at controller '{$arrController[0]}'");
         }
         $callable = [$controllerObject,$method];
         $this->dispatchCallable($callable);
