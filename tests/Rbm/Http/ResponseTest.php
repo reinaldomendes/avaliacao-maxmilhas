@@ -13,7 +13,6 @@ class ResponseTest extends PHPUnit_Framework_TestCase
     protected $response;
     /**
      * @return Rbm\Http\Request;
-     * @covers  initializeParams
      */
     public function setup()
     {

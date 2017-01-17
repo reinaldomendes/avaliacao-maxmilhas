@@ -2,6 +2,8 @@
 
 namespace Rbm\Http;
 
+use Rbm\Http\Router\Exception as RouterException;
+
 class Router
 {
     /**
@@ -22,7 +24,7 @@ class Router
   /**
    * @var array() - files to include on route process
    */
-  protected $routeFiles;
+  protected $routeFiles = [];
 
     /**
      * @param Request $request
@@ -110,8 +112,26 @@ class Router
         return $this;
     }
 
+    /**
+     * Return a list o routes.
+     * @return array - list of routes
+     */
+    public function getRoutes()
+    {
+        return $this->routes;
+    }
+
+    /**
+     * return request object.
+     * @return Rbm\Http\Request
+     */
+    public function getRequest()
+    {
+        return $this->request;
+    }
+
     /*
-    * @return array found route
+    * @return array - found route - array(routeString => controller)
     */
     public function route()
     {
@@ -194,7 +214,7 @@ class Router
     {
         foreach ($this->routeFiles as $file) {
             if (!is_file($file)) {
-                throw new \Exception(" Route file '{$file}' not found");
+                throw new RouterException(" Route file '{$file}' not found");
             }
             include $file;
         }
