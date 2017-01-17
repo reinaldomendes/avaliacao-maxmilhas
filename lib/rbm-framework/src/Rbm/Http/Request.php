@@ -8,17 +8,44 @@ namespace Rbm\Http;
 class Request
 {
     protected $server = [];
+    /**
+     * @var array  - GET http params
+     */
     protected $get = [];
+
+    /**
+     * @var array  - POST http params
+     */
     protected $post = [];
+
+    /**
+     * @var array  - DELETE http params
+     */
     protected $delete = [];
+
+    /**
+     * @var array  - PUT http params
+     */
     protected $put = [];
+
+    /**
+     * @var array - route and user params
+     */
     protected $params = [];
+
+    /**
+     * @var string - http method
+     */
+    protected $method = 'GET';
+
+    /**
+     * @var bool - method is overried with[_method]
+     */
+    protected $isMethodOverrided = false;
 
     public function __construct()
     {
-        $this->server = $_SERVER;
-        $this->get = $_GET;
-        $this->post = $_POST;
+        $this->initializeParams();
     }
 
     /**
@@ -26,10 +53,7 @@ class Request
      */
     public function getMethod()
     {
-        $default = isset($this->server['REQUEST_METHOD']) ? $this->server['REQUEST_METHOD'] : null;
-        $method = $this->getParam('_method', $default);
-
-        return strtoupper($method);
+        return $this->method;
     }
 
     /**
@@ -38,7 +62,7 @@ class Request
      */
     public function isMethodOverrided()
     {
-        return (bool) (isset($this->post['_method']) ? $this->post['_method'] : false);
+        return $this->isMethodOverrided;
     }
 
     /**
@@ -53,6 +77,32 @@ class Request
         return $this;
     }
 
+    /**
+     * Return param key if found on (params|post|put|delete|get).
+     * @return mixed
+     */
+    public function getParam($key, $default = null)
+    {
+        $arrayTests = ['params','post','put','delete','get'];
+        foreach ($arrayTests as  $property) {
+            if (isset($this->{$property}[$key])) {
+                return $this->{$property}[$key];
+            }
+        }
+
+        return $default;
+    }
+
+    /**
+     * return get params when method is ANY.
+     * @return array()
+     */
+    public function getGetParams()
+    {
+        return $this->get;
+
+        return [];
+    }
     /**
      * return post params when method is POST.
      * @return array()
@@ -72,17 +122,7 @@ class Request
      **/
     public function getPutParams()
     {
-        if ($this->getMethod() == 'PUT') {
-            if ($this->isMethodOverrided()) {
-                return $this->post;
-            } else {
-                parse_str($this->getPhpInput(), $postVars);
-
-                return $postVars;
-            }
-        }
-
-        return [];
+        return $this->put;
     }
 
     /**
@@ -91,35 +131,12 @@ class Request
      **/
     public function getDeleteParams()
     {
-        if ($this->getMethod() == 'DELETE') {
-            if ($this->isMethodOverrided()) {
-                return $this->post;
-            } else {
-                parse_str($this->getPhpInput(), $postVars);
-
-                return $postVars;
-            }
-        }
-
-        return [];
+        return $this->delete;
     }
 
     /**
-     * Return param key if found on (params|post|put|delete|get).
-     * @return mixed
+     * @return string requestUri
      */
-    public function getParam($key, $default = null)
-    {
-        $arrayTests = ['params','post','put','delete','get'];
-        foreach ($arrayTests as  $property) {
-            if (isset($this->{$property}[$key])) {
-                return $this->{$property}[$key];
-            }
-        }
-
-        return $default;
-    }
-
     public function getRequestUri()
     {
         return $this->server['REQUEST_URI'];
@@ -132,5 +149,35 @@ class Request
     protected function getPhpInput()
     {
         return file_get_contents('php://input');
+    }
+
+    protected function initializeParams()
+    {
+        $this->server = $_SERVER;
+        $this->get = $_GET;
+
+        $methodOverrided = (isset($_POST['_method']) ? $_POST['_method'] : false);
+        if ($methodOverrided) {
+            $this->isMethodOverrided = (bool) $methodOverrided;
+            $this->method = strtoupper($methodOverrided);
+            $property = strtolower($methodOverrided);
+            $this->{$property} = $_POST;
+        } else {
+            $method = isset($this->server['REQUEST_METHOD']) ? $this->server['REQUEST_METHOD'] : 'GET';
+            $this->method = strtoupper($method);
+
+            switch ($method) {
+                case 'PUT':
+                    parse_str($this->getPhpInput(), $this->put);
+                    break;
+                case 'DELETE':
+                    parse_str($this->getPhpInput(), $this->delete);
+                break;
+                default:
+                    $this->post = $_POST;
+                break;
+
+            }
+        }
     }
 }
