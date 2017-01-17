@@ -10,15 +10,37 @@ class View
 
     protected $vars = [];
 
+    protected $renderer = null;
+
     public function __construct($name)
     {
         $this->name = $name;
     }
 
     /**
+     * @return string name
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param Rbm\View\Renderer | callable
+     * @return Rbm\View\View
+     */
+    public function setRenderer($renderer)
+    {
+        $this->renderer = $renderer;
+
+        return $this;
+    }
+
+    /**
      * define view parameters.
      * @param string| array $param name or associative array of params [key => value]
      * @param mixed value - value of a param
+     * @return Rbm\View\View
      */
     public function with($param, $value = null)
     {
@@ -35,6 +57,9 @@ class View
         return $this;
     }
 
+    /**
+     * @return array - variables to a view
+     */
     public function getVars()
     {
         return $this->vars;
@@ -53,28 +78,17 @@ class View
      */
     public function render()
     {
-        $scriptFile = $this->locateScriptFile();
-
-        if (null === $scriptFile) {
-            $paths = implode(',', $this->locatePaths);
-            throw new \Exception("view script file '{$this->name}' not found in {$paths}");
+        if (is_callable($this->renderer)) {
+            return call_user_func_array($this->renderer, [$this]);
         }
 
-        $variables = $this->getVars();
-
-        /*isolate script scope*/
-        return call_user_func(function () use ($scriptFile, $variables) {
-            ob_start();
-            extract($variables);
-            include $scriptFile;
-
-            return ob_get_clean();
-        });
+        return $this->renderer->render($this);
     }
 
     /**
      * Paths to locate a view file.
      * @param array $paths
+     * @return Rbm\View\View
      */
     public function setLocatePaths(array $paths)
     {
@@ -87,12 +101,17 @@ class View
      * Set extensions for a view file.
      * ex : php, phtml.
      * @param array $extensions
+     * @return Rbm\View\View
      */
     public function setExtensions(array $extensions)
     {
         $this->extensions = $extensions;
+
+        return $this;
     }
     /**
+     * Find view script.
+     * @return string|null
      */
     public function locateScriptFile()
     {
@@ -106,6 +125,9 @@ class View
             }
         }
 
-        return;
+        if (null === $scriptFile) {
+            $paths = implode(',', $view->getLocatePaths);
+            throw new \Exception("view script file '{$this->name}' not found in {$paths}");
+        }
     }
 }

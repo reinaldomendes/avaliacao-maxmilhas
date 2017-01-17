@@ -1,0 +1,26 @@
+
+
+<table>
+
+<thead>
+  <tr>
+
+<?php $firstRow = (array) current($collection);?>
+  <?php foreach ($firstRow as $fieldName => $value):?>
+
+    <th data-fieldname='<?php echo $this->htmlEscape($fieldName);?>'>
+      <?php echo $this->htmlEscape($fieldName);?>
+    </th>
+  <?php endforeach;?>
+ </tr>
+</thead>
+<?php foreach ($collection as  $row):?>
+  <tr>
+    <?php foreach ($row as $fieldName => $value):?>
+      <td data-fieldname='<?php echo $this->htmlEscape($fieldName);?>'>
+        <?php echo $this->htmlEscape($value);?>
+      </td>
+    <?php endforeach;?>
+</tr>
+<?php endforeach; ?>
+</table>

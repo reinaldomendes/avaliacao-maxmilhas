@@ -29,22 +29,19 @@ $di->bind('Dispatcher', function ($routeString, $routeMached) use ($di) {
 
 });
 
+/*View logic*/
+$di->bind('ViewRenderer', function () {
+  return new Rbm\View\Renderer();
+});
+
 $di->bind('View', function ($name) use ($di) {
     $result = new Rbm\View\View($name);
+
     $result->setLocatePaths($di->getParam('view.config.locate.paths'))
-            ->setExtensions($di->getParam('view.config.extensions'));
+            ->setExtensions($di->getParam('view.config.extensions'))
+            ->setRenderer(function ($view) use ($di) {
+              return $di->make('ViewRenderer')->render($view);
+            });
 
     return $result;
 });
-
-// return [
-//   '\\Rbm\Http\\Router' => function () {
-//
-//   },
-// ];
-
-//
-// public function dispatcher(){
-//
-// }
-

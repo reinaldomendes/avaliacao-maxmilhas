@@ -1,4 +1,7 @@
+
+
 <h1>
   <?php echo $title; ?>
 </h1>
 <?php echo $content;?>
+<?php echo $this->partial('utils.grid.grid', ['collection' => [['txt' => 1, 'label' => 2, 'xyz' => 3]]]);?>

@@ -5,6 +5,7 @@ ob_start(); //init a buffer
 require __DIR__.'/bootstrap.php';
 
 $di = di();
+
 $router = $di->make('Router');
 
 try {
