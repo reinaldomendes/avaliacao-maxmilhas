@@ -116,21 +116,13 @@ class Router
     }
 
     /*
-    * @return Rbm\Http\Dispatcher
+    * @return array found route
     */
     public function route()
     {
         $this->includeRouteFiles();
-        $route = $this->findRoute();
-        if ($route) {
-            $dispatcher = new Dispatcher(key($route), current($route));
-            $dispatcher->setRequest($this->request)
-                    ->setResponse($this->response);
-        } else {
-            throw new \Exception('Route not found');
-        }
 
-        return $dispatcher;
+        return  $this->findRoute();
     }
 
     /*
@@ -158,7 +150,7 @@ class Router
      */
     public function match($routeString)
     {
-        $uri = $this->request->getRequestUri();
+        $uri = $this->request->getRequestPath();
         $regexRouteParam = '@:\w[\w\d]*@';
         $priority = null;
         if (preg_match($regexRouteParam, $routeString)) {

@@ -149,6 +149,16 @@ class Request
     }
 
     /**
+     * @return string requestUri without query string
+     */
+    public function getRequestPath()
+    {
+        $result = $this->getRequestUri();
+
+        return current(explode('?', $result));
+    }
+
+    /**
      * @return string php://input
      */
     public function getRawPhpInput()

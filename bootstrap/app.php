@@ -16,6 +16,7 @@ set_exception_handler(function () {
 use Rbm\Http\Router;
 use Rbm\Http\Request;
 use Rbm\Http\Response;
+use Rbm\Http\Dispatcher;
 
 $request = new Request;
 $response = new Response();
@@ -24,12 +25,21 @@ $routeFile = __DIR__.'/../app/Http/routes.php';
 $router = new Router($request, $response);
 
 try {
-    $router->setRouteFiles([$routeFile])
-    ->route()
-    ->setControllersNamespace('\\App\\Http\\Controllers\\')
-    ->dispatch()
-    ->send();
+    $route = $router
+    ->setRouteFiles([$routeFile])
+    ->route();
+    if ($route) {
+        $dispatcher = new Dispatcher(key($route), current($route));
+        $dispatcher->setRequest($request)
+              ->setResponse($response)
+              ->setControllersNamespace('\\App\\Http\\Controllers\\')
+              ->dispatch()
+              ->send();
+    } else {
+        throw new \Exception('Route not found');
+    }
 } catch (\Exception $e) {
     echo $e;
 }
+
 ob_end_flush();

@@ -248,8 +248,18 @@ class RequestTest extends PHPUnit_Framework_TestCase
      */
     public function we_should_get_a_request_uri()
     {
-        $_SERVER['REQUEST_URI'] = '/request';
+        $_SERVER['REQUEST_URI'] = '/request?a=1';
         $request = $this->createRequest();
         $this->assertEquals($request->getRequestUri(), $_SERVER['REQUEST_URI']);
+    }
+
+    /**
+     * @test
+     */
+    public function we_should_get_a_request_path()
+    {
+        $_SERVER['REQUEST_URI'] = '/request?a=1';
+        $request = $this->createRequest();
+        $this->assertEquals($request->getRequestPath(), '/request');
     }
 }

@@ -6,14 +6,47 @@ class ImagesController
 {
     public function index($request, $response)
     {
-        return 'hello img world';
+        return 'hello list world'.
+        '<form action="/images/1" method="POST">
+            <input type="hidden" name="_method" value="DELETE" />
+            <input type="hidden" name="val" value="valor" />
+            <button type="submit">Delete</button>
+        </form>';
+    }
+    public function show($request, $response)
+    {
+        return 'hello show world';
     }
     public function create($request, $response)
     {
-        return 'Hello create world';
+        return 'hello create world'.
+        '<form action="/images" method="POST">
+            <input type="hidden" name="val" value="valor" />
+            <button type="submit">Create</button>
+        </form>';
     }
+
+    public function store($request, $response)
+    {
+        return 'Hello Store World';
+    }
+
     public function edit($request, $response)
     {
-        return 'Hello edit world';
+        return 'hello edit world'.
+        '<form action="/images/1" method="POST">
+            <input type="hidden" name="_method" value="PUT" />
+            <input type="hidden" name="val" value="valor" />
+            <button type="submit">Update</button>
+        </form>';
+    }
+    public function update($request, $response)
+    {
+        return 'Hello Update World';
+    }
+
+    public function destroy($request, $response)
+    {
+        return 'Hello Destroy World';
     }
 }
