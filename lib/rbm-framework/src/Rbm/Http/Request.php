@@ -43,8 +43,14 @@ class Request
      */
     protected $isMethodOverrided = false;
 
-    public function __construct()
+    /**
+     * @var null|string - represent data of a php://input
+     */
+    protected $rawPhpInput = null;
+
+    public function __construct($rawPhpInput = null)
     {
+        $this->setRawPhpInput($rawPhpInput);
         $this->initializeParams();
     }
 
@@ -142,21 +148,43 @@ class Request
         return $this->server['REQUEST_URI'];
     }
 
+    /**
+     * @return string php://input
+     */
+    public function getRawPhpInput()
+    {
+        if (null === $this->rawPhpInput) {
+            $this->rawPhpInput = file_get_contents('php://input');
+        }
+
+        return $this->rawPhpInput;
+    }
+    /**
+     * Set alternative string for php://input useful for test.
+     * @param string php://input
+     * @return Rbm\Http\Request
+     */
+    public function setRawPhpInput($str)
+    {
+        $this->rawPhpInput = $str;
+
+        return $this;
+    }
+
     /***************************************************************************
             Protected methods
     /**************************************************************************/
 
-    protected function getPhpInput()
-    {
-        return file_get_contents('php://input');
-    }
-
+    /**
+     * @return Rbm\Http\Request
+     */
     protected function initializeParams()
     {
         $this->server = $_SERVER;
         $this->get = $_GET;
 
         $methodOverrided = (isset($_POST['_method']) ? $_POST['_method'] : false);
+
         if ($methodOverrided) {
             $this->isMethodOverrided = (bool) $methodOverrided;
             $this->method = strtoupper($methodOverrided);
@@ -165,13 +193,12 @@ class Request
         } else {
             $method = isset($this->server['REQUEST_METHOD']) ? $this->server['REQUEST_METHOD'] : 'GET';
             $this->method = strtoupper($method);
-
             switch ($method) {
                 case 'PUT':
-                    parse_str($this->getPhpInput(), $this->put);
+                    parse_str($this->getRawPhpInput(), $this->put);
                     break;
                 case 'DELETE':
-                    parse_str($this->getPhpInput(), $this->delete);
+                    parse_str($this->getRawPhpInput(), $this->delete);
                 break;
                 default:
                     $this->post = $_POST;
@@ -179,5 +206,7 @@ class Request
 
             }
         }
+
+        return $this;
     }
 }

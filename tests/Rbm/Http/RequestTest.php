@@ -27,10 +27,11 @@ class RequestTest extends PHPUnit_Framework_TestCase
 
     /**
      * @return Rbm\Http\Request;
+     * @covers  initializeParams
      */
-    public function createRequest()
+    public function createRequest($phpInput = null)
     {
-        return new Request;
+        return new Request($phpInput);
     }
 
     /**
@@ -186,7 +187,7 @@ class RequestTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function we_shouldnot_get_a_post_with_get_post_params_method_when_method_is_not_post()
+    public function we_should_not_get_a_post_with_get_post_params_method_when_method_is_not_post()
     {
         $_POST['test'] = 'value';
         $_POST['_method'] = 'PUT';
@@ -197,26 +198,22 @@ class RequestTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function we_shouldt_get_a_put_with_get_put_params_method_when_method_is_put_with_method_override()
+    public function we_should_get_a_put_with_get_put_params_method_when_method_is_put_with_method_override()
     {
         $_POST['test'] = 'value';
         $_POST['_method'] = 'PUT';
         $request = $this->createRequest();
         $this->assertEquals($request->getPutParams(), $_POST);
     }
-    /*
+    /**
      * @test
      */
-    public function we_shouldt_get_a_put_with_get_put_params_method_when_method_is_put()
+    public function we_should_get_a_put_with_get_put_params_method_when_method_is_put()
     {
         $_SERVER['REQUEST_METHOD'] = 'PUT';
         $strValue = 'test=value&test2=value2';
         parse_str($strValue, $testValue);
-        $request = $this->getMockBuilder('Rbm\Http\Request')
-                     ->getMock();
-
-        $request->method('getPhpInput')
-                  ->willReturn($strValue);
+        $request = $this->createRequest($strValue);
 
         $this->assertEquals($request->getPutParams(), $testValue);
     }
@@ -224,27 +221,35 @@ class RequestTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function we_shouldt_get_a_delete_with_get_delete_params_method_when_method_is_delete_with_method_override()
+    public function we_should_get_a_delete_with_get_delete_params_method_when_method_is_delete()
+    {
+        $_SERVER['REQUEST_METHOD'] = 'DELETE';
+        $strValue = 'test=value&test2=value2';
+        parse_str($strValue, $testValue);
+
+        $request = $this->createRequest($strValue);
+
+        $this->assertEquals($request->getDeleteParams(), $testValue);
+    }
+
+    /**
+     * @test
+     */
+    public function we_should_get_a_delete_with_get_delete_params_method_when_method_is_delete_with_method_override()
     {
         $_POST['test'] = 'value';
         $_POST['_method'] = 'DELETE';
         $request = $this->createRequest();
         $this->assertEquals($request->getDeleteParams(), $_POST);
     }
-    /*
+
+    /**
      * @test
      */
-    public function we_shouldt_get_a_delete_with_get_delete_params_method_when_method_is_delete()
+    public function we_should_get_a_request_uri()
     {
-        $_SERVER['REQUEST_METHOD'] = 'DELETE';
-        $strValue = 'test=value&test2=value2';
-        parse_str($strValue, $testValue);
-        $request = $this->getMockBuilder('Rbm\Http\Request')
-                     ->getMock();
-
-        $request->method('getPhpInput')
-                  ->willReturn($strValue);
-
-        $this->assertEquals($request->getDeleteParams(), $testValue);
+        $_SERVER['REQUEST_URI'] = '/request';
+        $request = $this->createRequest();
+        $this->assertEquals($request->getRequestUri(), $_SERVER['REQUEST_URI']);
     }
 }
