@@ -6,12 +6,17 @@ class ImagesController
 {
     public function index($request, $response)
     {
-        return 'hello list world'.
-        '<form action="/images/1" method="POST">
-            <input type="hidden" name="_method" value="DELETE" />
-            <input type="hidden" name="val" value="valor" />
-            <button type="submit">Delete</button>
-        </form>';
+        return view('images.index')
+        ->with('title', 'Main title')
+        ->with([
+            'content' => 'hello list world'.
+            '<form action="/images/1" method="POST">
+                <input type="hidden" name="_method" value="DELETE" />
+                <input type="hidden" name="val" value="valor" />
+                <button type="submit">Delete</button>
+            </form>',
+        ]
+    );
     }
     public function show($request, $response)
     {
@@ -47,6 +52,6 @@ class ImagesController
 
     public function destroy($request, $response)
     {
-        return 'Hello Destroy World';
+        return 'Hello Destroy World'.' '.$request->getParam('id');
     }
 }

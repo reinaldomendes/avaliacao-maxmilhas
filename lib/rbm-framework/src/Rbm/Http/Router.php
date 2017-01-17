@@ -19,10 +19,6 @@ class Router
      */
     protected $request;
 
-    /**
-     * @var Rbm\Http\Response
-     */
-    protected $response;
   /**
    * @var array() - files to include on route process
    */
@@ -32,10 +28,9 @@ class Router
      * @param Request $request
      * @param Response $response
      */
-    public function __construct(Request $request, Response $response)
+    public function __construct(Request $request)
     {
         $this->request = $request;
-        $this->response = $response;
     }
 
     /**
@@ -44,7 +39,7 @@ class Router
     public function resource($resource, $controller)
     {
         $this->get('/'.$resource, $controller.'@index'); #list
-        $this->get('/'.$resource.'/:id', $controller.'@show'); #show
+        $this->get('/'.$resource.'/:id/show', $controller.'@show'); #show
         $this->get('/'.$resource.'/create', $controller.'@create'); #create
         $this->get('/'.$resource.'/:id/edit', $controller.'@edit'); #edit
         $this->post('/'.$resource, $controller.'@store'); #store

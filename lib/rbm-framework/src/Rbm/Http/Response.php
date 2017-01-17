@@ -28,7 +28,7 @@ class Response
      */
     public function setBody($data)
     {
-        $this->body = $data;
+        $this->body = (string) $data;
 
         return $this;
     }

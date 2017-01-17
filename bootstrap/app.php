@@ -2,36 +2,17 @@
 
 ob_start(); //init a buffer
 
-require __DIR__.'/helpers/functions.php';
+require __DIR__.'/bootstrap.php';
 
-error_reporting(E_ALL);
-set_error_handler(function () {
-  $errors = func_get_args();
-  echo $errors[1].$errors[2].':'.$errors[3]; die;
-});
-set_exception_handler(function () {
-  print_r(func_get_args());die;
-});
-
-use Rbm\Http\Router;
-use Rbm\Http\Request;
-use Rbm\Http\Response;
-use Rbm\Http\Dispatcher;
-
-$request = new Request;
-$response = new Response();
-$routeFile = __DIR__.'/../app/Http/routes.php';
-
-$router = new Router($request, $response);
+$di = di();
+$router = $di->make('Router');
 
 try {
-    $route = $router
-    ->setRouteFiles([$routeFile])
-    ->route();
+    $route = $router->route();
     if ($route) {
-        $dispatcher = new Dispatcher(key($route), current($route));
-        $dispatcher->setRequest($request)
-              ->setResponse($response)
+        $dispatcher = di()->make('Dispatcher', [key($route), current($route)]);
+
+        $dispatcher
               ->setControllersNamespace('\\App\\Http\\Controllers\\')
               ->dispatch()
               ->send();
