@@ -1,5 +1,7 @@
 <?php
 
+ob_start(); //init a buffer
+
 require __DIR__.'/helpers/functions.php';
 
 error_reporting(E_ALL);
@@ -30,3 +32,4 @@ try {
 } catch (\Exception $e) {
     echo $e;
 }
+ob_end_flush();

@@ -3,9 +3,7 @@
 
  $this->get('/', 'HomeController@index');
 
-$this->get('/images/:id', function () {
-  return 'image';
-});
+$this->resource('images', 'ImagesController');
 // Route::resource('images', function ($request) {
 //
 // });

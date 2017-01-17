@@ -84,7 +84,7 @@ class Dispatcher
     }
 
     /**
-     * @param $namespace string - controller namespace
+     * @param  string $namespace - controller namespace
      * @return Rbm\Http\Dispatcher
      */
     public function setControllersNamespace($namespace)
@@ -102,21 +102,7 @@ class Dispatcher
         if (is_callable($this->controller)) {
             $this->dispatchCallable($this->controller);
         } elseif (is_string($this->controller)) {
-            $arrController = explode('@', $this->controller);
-            if (count($arrController) < 2) {
-                throw new \Exception("Action not found on a route string '{$this->routeString}'");
-            }
-            $class = rtrim($this->controllerNamespace, '\\').'\\'.$arrController[0];
-            if (!class_exists($class)) {
-                throw new \Exception("Controller  '{$arrController[0]}' not found at {$this->controllerNamespace}");
-            }
-            $method = $arrController[1];
-            $controllerObject = new $class($this->request, $this->response);
-            if (!method_exists($controllerObject, $method)) {
-                throw new \Exception("Method  '{$method}' not found at controller '{$arrController[0]}'");
-            }
-            $callable = [$controllerObject,$method];
-            $this->dispatchCallable($callable);
+            $this->dispatchControllerString($this->controller);
         } else {
             $s = print_r($this->controller, true);
             throw new \Exception("Controller is not a callable or valid string '{$s}'");
@@ -128,7 +114,28 @@ class Dispatcher
     Protected methods
     ***************************************************************************/
     /**
-     *
+     * @param string $controller
+     */
+    protected function dispatchControllerString($controller)
+    {
+        $arrController = explode('@', $controller);
+        if (count($arrController) < 2) {
+            throw new \Exception("Action not found on a route string '{$this->routeString}'");
+        }
+        $class = rtrim($this->controllerNamespace, '\\').'\\'.$arrController[0];
+        if (!class_exists($class)) {
+            throw new \Exception("Controller  '{$arrController[0]}' not found at {$this->controllerNamespace}");
+        }
+        $method = $arrController[1];
+        $controllerObject = new $class($this->request, $this->response);
+        if (!method_exists($controllerObject, $method)) {
+            throw new \Exception("Method  '{$method}' not found at controller '{$arrController[0]}'");
+        }
+        $callable = [$controllerObject,$method];
+        $this->dispatchCallable($callable);
+    }
+    /**
+     * @param  callable $callable
      */
     protected function dispatchCallable($callable)
     {

@@ -23,9 +23,14 @@ class Router
      * @var Rbm\Http\Response
      */
     protected $response;
+  /**
+   * @var array() - files to include on route process
+   */
+  protected $routeFiles;
 
     /**
-     *
+     * @param Request $request
+     * @param Response $response
      */
     public function __construct(Request $request, Response $response)
     {
@@ -34,22 +39,25 @@ class Router
     }
 
     /**
-     * @var array() - files to include on route process
-     */
-    protected $routeFiles;
-
-    public function setOptions(array $options)
-    {
-        $this->options = $options;
-    }
-
-    /**
      *
      */
     public function resource($resource, $controller)
     {
+        $this->get('/'.$resource, $controller.'@index'); #list
+        $this->get('/'.$resource.'/:id', $controller.'@show'); #show
+        $this->get('/'.$resource.'/create', $controller.'@create'); #create
+        $this->get('/'.$resource.'/:id/edit', $controller.'@edit'); #edit
+        $this->post('/'.$resource, $controller.'@store'); #store
+        $this->put('/'.$resource.'/:id', $controller.'@update'); #list
+        $this->delete('/'.$resource.'/:id', $controller.'@destroy'); #list
     }
 
+    /**
+     * Register a GET route.
+     * @param string $path
+     * @param mixed $controller
+     * @return Rbm\Http\Router
+     */
     public function get($path, $controller)
     {
         $this->routes['GET'][$path] = $controller;
@@ -57,6 +65,49 @@ class Router
         return $this;
     }
 
+    /**
+     * Register a POST route.
+     * @param string $path
+     * @param mixed $controller
+     * @return Rbm\Http\Router
+     */
+    public function post($path, $controller)
+    {
+        $this->routes['POST'][$path] = $controller;
+
+        return $this;
+    }
+
+    /**
+     * Register a PUT route.
+     * @param string $path
+     * @param mixed $controller
+     * @return Rbm\Http\Router
+     */
+    public function put($path, $controller)
+    {
+        $this->routes['PUT'][$path] = $controller;
+
+        return $this;
+    }
+
+    /**
+     * Register a DELETE route.
+     * @param string $path
+     * @param mixed $controller
+     * @return Rbm\Http\Router
+     */
+    public function delete($path, $controller)
+    {
+        $this->routes['DELETE'][$path] = $controller;
+
+        return $this;
+    }
+
+    /**
+     *  Register an array of files to include.
+     * @param array $files
+     */
     public function setRouteFiles(array $files)
     {
         $this->routeFiles = (array) $files;
@@ -82,23 +133,51 @@ class Router
         return $dispatcher;
     }
 
+    /*
+    * @return string|Closure
+    */
+
+    protected function findRoute()
+    {
+        $method = $this->request->getMethod();
+        $matches = [];
+        foreach ($this->routes[$method] as $routeString => $controller) {
+            if ($priority = $this->match($routeString)) {
+                if (!isset($matches[$priority])) {
+                    $matches[$priority] = [$routeString => $controller];
+                }
+            }
+        }
+        ksort($matches);
+
+        return current($matches);
+    }
     /**
      * Check if route match.
+     * @return bool|int - false if not matched int priority of a match route
      */
     public function match($routeString)
     {
         $uri = $this->request->getRequestUri();
-
-        $regexRoute = preg_replace('@:\w[\w\d]*@', '([^/]+)', $routeString);
-        $regexRoute = '@^'.$regexRoute.'/?$@';
+        $regexRouteParam = '@:\w[\w\d]*@';
+        $priority = null;
+        if (preg_match($regexRouteParam, $routeString)) {
+            $regexRoute = preg_replace($regexRouteParam, '([^/]+)', $routeString);
+            $regexRoute = '@^'.$regexRoute.'/?$@';
+            $priority = 2;
+        } else {
+            $regexRoute = '@^'.$routeString.'/?$@';
+            $priority = 1;
+        }
         $arrayMatches = [];
         $match = preg_match($regexRoute, $uri, $arrayMatches);
-
         if ($match) {
             $this->setRouteParams($routeString, $arrayMatches);
+
+            return $priority;
         }
 
-        return $match;
+        return false;
     }
 
     /***************************************************************************
@@ -122,21 +201,6 @@ class Router
                 $this->request->setParam($paramName, $value);
             }
         }
-    }
-    /*
-    * @return string|Closure
-    */
-
-    protected function findRoute()
-    {
-        $method = $this->request->getMethod();
-        foreach ($this->routes[$method] as $routeString => $controller) {
-            if ($this->match($routeString)) {
-                return [$routeString => $controller];
-            }
-        }
-
-        return;
     }
 
     protected function includeRouteFiles()

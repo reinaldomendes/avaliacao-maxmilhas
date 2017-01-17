@@ -39,9 +39,23 @@ class Response
      */
     public function setHeader($name, $value)
     {
-        $this->headers[$name] = $value;
+        $this->headers[strtolower($name)] = $value;
 
         return $this;
+    }
+
+    public function getHeader($name)
+    {
+        return $this->headers[strtolower($name)];
+    }
+
+    /**
+     * return  body.
+     * @return string
+     */
+    public function getBody()
+    {
+        return $this->body;
     }
 
     /**
@@ -50,7 +64,7 @@ class Response
      */
     public function __toString()
     {
-        return $this->body;
+        return $this->getBody();
     }
 
     /**
@@ -71,6 +85,8 @@ class Response
     public function sendHttpStatusCode()
     {
         http_response_code($this->httpResponseCode);
+
+        return $this;
     }
 
     /**
@@ -79,7 +95,7 @@ class Response
     public function sendHeaders()
     {
         foreach ($this->headers as $name => $value) {
-            header($name.':'.$value, true);
+            header($name.':'.$value);
         }
 
         return $this;
