@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Repository;
+namespace App\Models\Repository;
 
 use App\Models\Photo;
-use App\Dao\PhotoDao;
+use App\Models\Dao\PhotoDao;
 
 class PhotoRepository
 {

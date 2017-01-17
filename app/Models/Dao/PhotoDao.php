@@ -2,7 +2,7 @@
 /**
 *  @todo Make an abstract class to avoid repeat logic
 */
-namespace App\Dao;
+namespace App\Models\Dao;
 
 use PDO;
 

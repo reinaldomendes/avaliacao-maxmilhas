@@ -64,11 +64,11 @@ $di->bindSingleton('PDO', function () {
 * PhotoDao
 */
 $di->bind('PhotoDao', function () use ($di) {
-    return new App\Dao\PhotoDao($di->make('PDO'));
+    return new App\Models\Dao\PhotoDao($di->make('PDO'));
 });
 
 $di->bind('PhotoRepository', function () use ($di) {
-    $repository = new \App\Repository\PhotoRepository($di->make('PhotoDao'), function ($values) use ($di) {
+    $repository = new \App\Models\Repository\PhotoRepository($di->make('PhotoDao'), function ($values) use ($di) {
         return $di->make('Photo', [$values]);
     });
 
