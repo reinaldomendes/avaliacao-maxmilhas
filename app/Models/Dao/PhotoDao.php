@@ -75,6 +75,7 @@ class PhotoDao
     {
         $data = $this->filterData($data);
         $parameters = [];
+        $paramValues = [];
         foreach ($data as $key => $value) {
             $parameters[] = ":{$key}";
             $paramValues[":{$key}"] = ($value);
@@ -85,7 +86,6 @@ class PhotoDao
 
         $sql = "INSERT INTO `{$this->table}`($fields) values($parameters)";
         $statement = $this->conn->prepare($sql);
-
         if ($statement->execute($paramValues)) {
             return $this->conn->lastInsertId();
         }

@@ -26,6 +26,18 @@ if (!function_exists('upload_url')) {
         return implode('/', ['/uploads', $param]);
     }
 }
+if (!function_exists('upload_path')) {
+    function upload_path($param = null)
+    {
+        $uploadDir = realpath(__DIR__.'/../../public/uploads/');
+        if (!is_dir($uploadDir)) {
+            @mkdir($uploadDir, '0777');
+        }
+        $result = implode('/', [$uploadDir, $param]);
+
+        return $result;
+    }
+}
 
 if (!function_exists('assets_url')) {
     function assets_url($param = null)

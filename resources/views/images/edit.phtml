@@ -1,0 +1,12 @@
+<?php $this->extend('layouts.app', ['title' => 'Gerenciar Images']);?>
+
+<?php echo $this->partial('images._form', [
+  'method' => 'PUT',
+  'submit' => [
+    'label' => 'Editar Imagem',
+    'icon'  => 'fa-edit',
+  ],
+  'url' => "/images/{$resource->id}",
+  'values' => [], //@todo get Session :input
+  'model' => $resource,
+]);

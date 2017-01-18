@@ -21,7 +21,7 @@ class PhotoRepository
         $this->dao = $dao;
         $this->photoBuilder = $photoBuilder;
     }
-    public function newInstance($data)
+    public function newInstance($data = [])
     {
         return call_user_func_array($this->photoBuilder, [$data]);
     }
@@ -59,6 +59,8 @@ class PhotoRepository
             //@todo melhorar erro - talvez colocar na Dao
             throw new \Exception('Erro ao atualizar registro');
         }
+
+        return $updated;
     }
     public function save(Photo $photo)
     {

@@ -1,0 +1,12 @@
+<?php $this->extend('layouts.app', ['title' => 'Cadastrar nova Imagem']);?>
+
+<?php echo $this->partial('images._form', [
+  'method' => 'POST',
+  'submit' => [
+    'label' => 'Cadastrar imagem',
+    'icon'  => 'fa-add',
+  ],
+  'url' => '/images',
+  'values' => [], //@todo get Session :input
+  'model' => $resource,
+]);

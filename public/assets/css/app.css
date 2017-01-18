@@ -38,8 +38,11 @@ a.btn{
 
 
 
+#carousel-maxmilhas .item{
+  min-height: 70vh;
+}
 
 #carousel-maxmilhas .item img{
-  max-width: 100%;
+  max-width: 100%;  
   width:100%;
 }
