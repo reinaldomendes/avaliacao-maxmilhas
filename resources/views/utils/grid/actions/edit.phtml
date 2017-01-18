@@ -1,0 +1,13 @@
+<?php
+$label = is_array($options) ? $options['label'] : $options;
+$url = is_array($options) ? $options['url'] : null;
+$url = str_replace(':id', $model->id, $url);
+?>
+<form action="<?php echo $url;?>" method="POST" style="display:inline-block;" >
+  <?php echo  method_field('get');?>
+  <?php echo csrf_field(); ?>
+  <button type='submit' class="<?php echo($class ?: 'btn btn-warning'); ?>" data-action="edit" value="<?php echo $this->htmlEscape($label ?: 'Edit');?>">
+      <i class="fa fa-edit" aria-hidden="true"></i>
+      <?php echo($label ?: ''); ?>
+  </button>
+</form>

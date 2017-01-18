@@ -42,14 +42,26 @@ class PhotoDao
     /**
      *
      **/
-    public function getList(array $where = [])
+    public function getList(array $where = [], $order = null, $limit = null, $offset = null)
     {
         $where = $this->filterData($where);
-        $whereClause = null;
+
         $whereParamValues = [];
         $whereArray = $this->buildWhereClause($where);
+        $orderClause = null;
+        if ($order) {
+            $orderClause = "order by {$order}";
+        }
+        $limitClause = null;
+        if ($limit) {
+            $limitClause = "limit {$limit}";
+            if ($offset) {
+                $limitClause .= ", {$offset}";
+            }
+        }
 
-        $sql = "SELECT * from `{$this->table}` {$whereArray['where']}";
+        $sql = "SELECT * from `{$this->table}` {$whereArray['where']} {$orderClause} {$limitClause}";
+
         $statement = $this->conn->prepare($sql);
         $statement->execute($whereArray['values']);
 
@@ -154,14 +166,17 @@ class PhotoDao
     /**
      *
      */
-    protected function buildWhereClause(array $where)
+    protected function buildWhereClause(array $where = [])
     {
-        $whereClause = [];
-        foreach ($where as $key => $value) {
-            $whereClause[] = "{$key} = :{$key}";
-            $whereParamValues[":{$key}"] = $value;
+        $whereClause = null;
+        $whereParamValues = [];
+        if ($where) {
+            foreach ($where as $key => $value) {
+                $whereClause[] = "{$key} = :{$key}";
+                $whereParamValues[":{$key}"] = $value;
+            }
+            $whereClause = ' WHERE '.implode(' AND ', $whereClause);
         }
-        $whereClause = ' WHERE '.implode(' AND ', $whereClause);
 
         return ['where' => $whereClause, 'values' => $whereParamValues];
     }

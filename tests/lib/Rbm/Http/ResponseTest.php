@@ -54,6 +54,24 @@ class ResponseTest extends PHPUnit_Framework_TestCase
                         ->sendHttpStatusCode();
         $this->assertEquals(http_response_code(), $status);
     }
+
+    /**
+     *  @test
+     *  @runInSeparateProcess
+     */
+    public function we_should_be_able_to_redirect()
+    {
+        $this->response->setRedirect('/uri', 301);
+        $this->response->sendHeaders();
+        $arrayHeaders = [];
+        foreach (xdebug_get_headers() as $header) {
+            $arrayHeader = explode(':', $header);
+            $arrayHeaders[$arrayHeader[0]] = $arrayHeader[1];
+        }
+
+        $this->assertEquals($arrayHeaders['location'], '/uri');
+        $this->assertEquals(301, http_response_code());
+    }
     /**
      *  @test
      *  @runInSeparateProcess

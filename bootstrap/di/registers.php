@@ -3,7 +3,7 @@
 
 $di = di();
 $di->bindSingleton('Request', function () {
-  return new \Rbm\Http\Request(file_get_contents('php://input'));
+  return new \Rbm\Http\Request();
 });
 
 $di->bind('Response', function () {

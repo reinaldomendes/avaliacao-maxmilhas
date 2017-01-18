@@ -14,6 +14,16 @@ class Renderer
      */
     public function render($view)
     {
+        $errorHandler = null;
+        /*ignore notice*/
+        $errorHandler = set_error_handler(function ($errno) use (&$errorHandler) {
+            if ($errno  === E_NOTICE) {
+                return;
+            }
+
+            return call_user_func_array($errorHandler, func_get_args());
+        });
+
         ob_start();
         extract($view->getVars());
 
@@ -25,6 +35,8 @@ class Renderer
         if (is_callable($this->__extends__)) {
             $result = call_user_func_array($this->__extends__, [$result]);
         }
+
+        restore_error_handler();
 
         return $result;
     }
@@ -46,12 +58,12 @@ class Renderer
      * @param array $params - variables to a view partial
      * @return string
      */
-    public function partial($name, array $params)
+    public function partial($name, array $params = [])
     {
         return  di()->make('View', [$name])->with($params);
     }
 
-    public function extend($name, array $params)
+    public function extend($name, array $params = [])
     {
         $this->__extends__ = function ($result) use ($name, $params) {
             return di()->make('View', [$name])->with(array_merge($params, ['content' => $result]));

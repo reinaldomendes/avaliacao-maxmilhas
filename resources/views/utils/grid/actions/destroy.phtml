@@ -1,0 +1,14 @@
+<?php
+  $label = is_array($options) ? $options['label'] : $options;
+  $confirm = is_array($options) ? $options['confirm'] : "Deseja realmente excluir o registro '{$model->id}'?";
+  $url = is_array($options) ? $options['url'] : null;
+  $url = str_replace(':id', $model->id, $url);
+?>
+<form action="<?php echo $this->htmlEscape($url);?>" method="POST" style="display:inline-block;">
+    <?php echo  method_field('DELETE');?>
+    <?php echo csrf_field();?>
+    <button type='submit' class="<?php echo($class ?: 'btn btn-danger'); ?>" data-action="destroy" data-confirm="<?php echo $this->htmlEscape($confirm);?>" value="<?php echo $this->htmlEscape($label ?: 'delete');?>">
+        <i class="fa fa-trash-o" aria-hidden="true"></i>
+        <?php echo($label ?: ''); ?>
+    </button>
+</form>

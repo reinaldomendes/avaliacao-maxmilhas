@@ -25,9 +25,9 @@ class PhotoRepository
     {
         return call_user_func_array($this->photoBuilder, [$data]);
     }
-    public function getList($where)
+    public function getList($where = [], $order = null, $limit = null, $offset = null)
     {
-        $list = $this->dao->getList($where);
+        $list = $this->dao->getList($where, $order, $limit, $offset);
         $newList = [];
         foreach ($list as $key => $value) {
             $newList[] = $this->newInstance($value);

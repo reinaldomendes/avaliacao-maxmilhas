@@ -1,26 +1,61 @@
 
 
-<table>
+<table class="grid table  table-striped table-bordered table-responsive col-md-12" data-element="grid">
+<?php if (count($collection)):?>
+  <thead>
+    <tr>
+      <?php foreach ($attributes as $attr => $label):?>
+        <th data-attr="<?php echo $this->htmlEscape($attr);?>">
+          <?php if (is_array($label)):?>
+            <?php echo $this->htmlEscape($label['label']);?>
+          <?php else:?>
+              <?php echo $this->htmlEscape($label);?>
+          <?php endif;?>
+        </th>
+      <?php endforeach;?>
 
-<thead>
+      <?php if (isset($actions) && count($actions)):?>
+      <th  data-element-part="actions" class="col-md-2" >
+        Ações
+      </th>
+    <?php endif;?>
+    </tr>
+  </thead>
+
+  <tbody>
+<?php foreach ($collection as $model):?>
   <tr>
+    <?php foreach ($attributes as $attr => $label):?>
 
-<?php $firstRow = (array) current($collection);?>
-  <?php foreach ($firstRow as $fieldName => $value):?>
-
-    <th data-fieldname='<?php echo $this->htmlEscape($fieldName);?>'>
-      <?php echo $this->htmlEscape($fieldName);?>
-    </th>
-  <?php endforeach;?>
- </tr>
-</thead>
-<?php foreach ($collection as  $row):?>
-  <tr>
-    <?php foreach ($row as $fieldName => $value):?>
-      <td data-fieldname='<?php echo $this->htmlEscape($fieldName);?>'>
-        <?php echo $this->htmlEscape($value);?>
+      <td data-attr="<?php echo $this->htmlEscape($attr);?>" >
+        <?php if (is_array($label) && isset($label['format'])):?>
+            <?php if (is_callable($label['format'])):?>
+              <?php echo call_user_func_array($label['format'], [$model->$attr, $model]);?>
+            <?php endif;?>
+        <?php else:?>
+          <?php echo $this->htmlEscape($model->$attr);?>
+        <?php endif;?>
       </td>
     <?php endforeach;?>
-</tr>
-<?php endforeach; ?>
+      <?php if (isset($actions) && count($actions)):?>
+    <td data-element-part="actions " class="actions" >
+
+      <?php foreach ($actions as $action => $options):?>
+        <?php echo $this->partial("utils.grid.actions.{$action}", ['options' => $options, 'model' => $model]);?>
+      <?php endforeach;?>
+
+    </td>
+  <?php endif;?>
+  </tr>
+<?php endforeach;?>
+</tbody>
+
+
+<?php else:?>
+  <tr >
+    <td>
+    Nenhum registro encontrado
+  </td>
+  </tr>
+<?php endif;?>
 </table>

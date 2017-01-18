@@ -1,7 +1,37 @@
-<?php $this->extend('layouts.app', []);?>
+<?php $this->extend('layouts.app', ['title' => 'Gerenciar Images']);?>
 
-<h1>
-  <?php echo $title; ?>
-</h1>
-<?php echo $content;?>
-<?php echo $this->partial('utils.grid.grid', ['collection' => [['txt' => 1, 'label' => 2, 'xyz' => 3]]]);?>
+<?php
+$params = [
+  'collection' => $collection,
+  'attributes'  => [
+    'label' => 'Label',
+    'path' => [
+        'label' => 'Imagem',
+        'format' => function ($v, $model) {
+            $v = $model->getImageUrl();
+
+           return "<img class='thumb img-thumbnail' src='{$v}' alt='{$model->label}' >";
+        },
+      ],
+  ],
+  'actions' => [
+    'edit'   => ['url' => '/images/:id/edit'],
+    'destroy' => ['url' => '/images/:id'],
+
+  ],
+];?>
+
+
+
+  <div class="pull-right ">
+    <a href="/images/create" class="btn btn-success">
+      <i class="fa fa-add" aria-hidden="true"></i>
+      Cadastrar nova Imagem
+     </a>
+  </div>
+
+
+
+
+
+<?php echo $this->partial('utils.grid.grid', $params);?>

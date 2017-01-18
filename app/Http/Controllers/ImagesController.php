@@ -6,17 +6,10 @@ class ImagesController
 {
     public function index($request, $response)
     {
+        $collection = di()->make('PhotoRepository')->getList([], 'id desc');
+
         return view('images.index')
-        ->with('title', 'Main title')
-        ->with([
-            'content' => 'hello list world'.
-            '<form action="/images/1" method="POST">
-                <input type="hidden" name="_method" value="DELETE" />
-                <input type="hidden" name="val" value="valor" />
-                <button type="submit">Delete</button>
-            </form>',
-        ]
-    );
+            ->with('collection', $collection);
     }
     public function show($request, $response)
     {
@@ -52,6 +45,13 @@ class ImagesController
 
     public function destroy($request, $response)
     {
-        return 'Hello Destroy World'.' '.$request->getParam('id');
+        $id = $request->getParam('id');
+        $repository = di()->make('PhotoRepository');
+        $photo = $repository->find($id);
+        if ($photo) {
+            $repository->delete($photo);
+        }
+
+        $response->setRedirect('/images');
     }
 }

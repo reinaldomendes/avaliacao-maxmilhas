@@ -20,6 +20,7 @@ $dotenv->load();
 require __DIR__.'/functions/helpers.php';
 require __DIR__.'/di/registers.php';
 
+/*Set di config parameters*/
 $viewPath = __DIR__.'/../resources/views/';
 $routeFile = __DIR__.'/../app/Http/routes.php';
 di()->bindParam('view.config.locate.paths', [$viewPath])

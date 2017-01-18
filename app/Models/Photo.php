@@ -15,6 +15,12 @@ class Photo extends ArrayObject
     {
         return $this->getArrayCopy();
     }
+
+    public function getImageUrl()
+    {
+        return upload_url($this->path);
+    }
+
     public function __get($name)
     {
         if (isset($this[$name])) {

@@ -1,0 +1,45 @@
+.clearfix:after{
+    display: block;
+    content: "";
+    clear: both;
+}
+.main-container{
+    margin-top:50px;
+}
+
+
+a.btn{
+  margin-bottom: 5px;
+}
+
+
+.grid thead {
+  background-color: #9cc;
+  border: 1px solid #599;
+}
+.grid th{
+  text-align: center;
+}
+.grid td,.grid td{
+  padding: 5px;
+}
+
+.grid td.actions{
+  white-space: nowrap;
+  text-align: center;
+}
+.grid th[data-attr="path"]{
+  width: 100px;
+}
+.thumb{
+  width:80px;
+}
+
+
+
+
+
+#carousel-maxmilhas .item img{
+  max-width: 100%;
+  width:100%;
+}

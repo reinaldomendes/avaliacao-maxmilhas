@@ -68,6 +68,16 @@ class Response
     }
 
     /**
+     * @param string $url
+     * @param int $code http status code
+     * @return  Rbm\Http\Response
+     */
+    public function setRedirect($url, $code = '302')
+    {
+        return $this->setHeader('Location', $url)->setHttpResponseCode($code);
+    }
+
+    /**
      * set http status code.
      * @return  Rbm\Http\Response
      */
@@ -94,6 +104,7 @@ class Response
      */
     public function sendHeaders()
     {
+        $this->sendHttpStatusCode();
         foreach ($this->headers as $name => $value) {
             header($name.':'.$value);
         }
@@ -103,8 +114,6 @@ class Response
 
     public function send()
     {
-        $this->sendHttpStatusCode();
-
         $this->sendHeaders();
         echo $this->body;
     }
