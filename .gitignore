@@ -2,3 +2,4 @@
 /tmp/report
 .env
 /public/uploads/
+.php_cs.cache

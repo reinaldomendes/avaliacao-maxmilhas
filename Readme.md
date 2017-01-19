@@ -24,6 +24,7 @@
 
 * *x-debug* é necessário para execução dos testes
 * Os logs "CodeCoverage" serão salvos na pasta /tmp/report
+* É necessário configurar a conexão para a banco de teste no arquivo .env
 
 ```bash
   cd PROJECT_FOLDER
