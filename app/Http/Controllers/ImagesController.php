@@ -2,8 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use Rbm\Http\Request;
+
 class ImagesController
 {
+    /**
+     * @request GET
+     * Exibe a listagem das imagens.
+     * @param Request $request
+     * @param Response $request
+     */
     public function index($request, $response)
     {
         $collection = di()->make('PhotoRepository')->getList([], ['id' => 'desc']);
@@ -11,10 +19,13 @@ class ImagesController
         return view('images.index')
             ->with('collection', $collection);
     }
-    public function show($request, $response)
-    {
-        return 'hello show world';
-    }
+
+    /**
+     * @request GET
+     * Exibe o formulário para cadastro de uma nova imagem.
+     * @param Request $request
+     * @param Response $request
+     */
     public function create($request, $response)
     {
         $resource = $collection = di()->make('PhotoRepository')->newInstance();
@@ -23,6 +34,12 @@ class ImagesController
             ->with('resource', $resource);
     }
 
+    /**
+     * Salva uma nova imagem no banco de dados e faz o upload.
+     * @request POST
+     * @param Request $request
+     * @param Response $request
+     */
     public function store($request, $response)
     {
         if ($this->hasUpload('file')) {
@@ -40,11 +57,16 @@ class ImagesController
                 session()->flash()->add('danger', 'Ocorreu um erro ao salvar a imagem.');
             }
         } else {
-            session()->flash()->add('danger', 'O upload é necessário para cadastar a imagem.');
+            session()->flash()->add('danger', 'Ocorreu um erro ao realizar o upload do arquivo tente novamente.');
             $response->setRedirect('/images/create');
         }
     }
-
+    /**
+     *  Exibe o formulário para edição de uma nova imagem.
+     * @request GET
+     * @param Request $request
+     * @param Response $request
+     */
     public function edit($request, $response)
     {
         $id = $request->getParam('id');
@@ -53,6 +75,12 @@ class ImagesController
         return view('images.edit')
             ->with('resource', $resource);
     }
+    /**
+     * Edita uma imagem.
+     * @request PUT
+     * @param Request $request
+     * @param Response $request
+     */
     public function update($request, $response)
     {
         $repository = di()->make('PhotoRepository');
@@ -94,6 +122,12 @@ class ImagesController
         }
     }
 
+    /**
+     * Exclui uma imagem.
+     * @request DELETE
+     * @param Request $request
+     * @param Response $request
+     */
     public function destroy($request, $response)
     {
         $id = $request->getParam('id');
@@ -116,6 +150,9 @@ class ImagesController
         $response->setRedirect('/images');
     }
 
+    /**
+     * Checa se há um arquivo de upload.
+     */
     protected function hasUpload($fieldName)
     {
         return isset($_FILES[$fieldName]) && $_FILES[$fieldName]['size'] > 0;
