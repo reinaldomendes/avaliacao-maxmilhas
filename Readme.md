@@ -46,24 +46,24 @@
 
 #### app
     Contém as classes com a regra da aplicação.
-  * app/Http/route.php # arquivo de rotas
-  * app/Http/controllers # Diretório dos controllers
-  * app/models/ # Logica de interação com o banco de dados
+    * app/Http/route.php # arquivo de rotas
+    * app/Http/controllers # Diretório dos controllers
+    * app/models/ # Logica de interação com o banco de dados
 
 #### bootstrap
     Contém arquivos necessários para inicialização da aplicação.
-  * bootstrap/app.php #contém a logica para execução das rotas e carregamento do controller
-  * bootstrap/di/registers.php # Neste arquivo é realizado os "binds" para criação
-            objetos através do dependency injection container.
-  * bootstrap/functions/helpers.php # funções utilitárias.
+    * bootstrap/app.php #contém a logica para execução das rotas e carregamento do controller
+    * bootstrap/di/registers.php # Neste arquivo é realizado os "binds" para criação
+              objetos através do dependency injection container.
+    * bootstrap/functions/helpers.php # funções utilitárias.
 
 #### database
     Arquivos relacionados ao banco de dados.    
-  * database/config/connection.php # conexões com o banco de dados
-  * database/sql/ # arquivos sql
+    * database/config/connection.php # conexões com o banco de dados
+    * database/sql/ # arquivos sql
 ### lib
       Bibliotecas
-  * lib/rbm-framework # Frameowrk MVC inspirado em Laravel, desenvolvido para esta avaliação.
+    * lib/rbm-framework # Frameowrk MVC inspirado em Laravel, desenvolvido para esta avaliação.
 
 ### public
       Diretório público, caso utilize um servidor web como apache, esta é pasta que deveria ser exposta.
