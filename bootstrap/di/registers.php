@@ -30,8 +30,12 @@ $di->bind('Dispatcher', function ($routeString, $routeMached) use ($di) {
 });
 
 /*View logic*/
-$di->bind('ViewRenderer', function () {
-  return new Rbm\View\Renderer();
+$di->bind('ViewRenderer', function () use ($di) {
+  $renderer = new Rbm\View\Renderer(function ($name) use ($di) {
+    return $di->make('View', [$name]);
+  });
+
+  return $renderer;
 });
 
 $di->bind('View', function ($name) use ($di) {

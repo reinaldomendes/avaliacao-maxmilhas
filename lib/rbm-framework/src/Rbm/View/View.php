@@ -2,16 +2,38 @@
 
 namespace Rbm\View;
 
+use Rbm\View\View\Exception as ViewException;
+
 class View
 {
+    /**
+     * @var string name - used to locate a script file
+     */
     protected $name = null;
 
+    /**
+     * @var array paths to search script files
+     */
     protected $locatePaths = [];
 
+    /**
+     * @var array variables to expose to a script file
+     */
     protected $vars = [];
 
+    /**
+     * @var Callable\Rbm\View\Renderer
+     */
     protected $renderer = null;
 
+    /**
+     * @var array extensions to load
+     */
+    protected $extensions = [];
+
+    /**
+     * @param string $name
+     */
     public function __construct($name)
     {
         $this->name = $name;
@@ -74,6 +96,7 @@ class View
         return (string) $this->render();
     }
     /**
+     * Render a view.
      * @return string
      */
     public function render()
@@ -125,9 +148,7 @@ class View
             }
         }
 
-        if (null === $scriptFile) {
-            $paths = implode(',', $view->getLocatePaths);
-            throw new \Exception("view script file '{$this->name}' not found in {$paths}");
-        }
+        $paths = implode(',', $this->locatePaths);
+        throw new ViewException("view script file '{$this->name}' not found in {$paths}");
     }
 }

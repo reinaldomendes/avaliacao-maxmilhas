@@ -57,7 +57,9 @@ class ImagesController
         $resource->id = $request->getParam('id');
 
         $uploadedFilePath = $this->handleUpload('file');
-        $doUnlinkNewFn = $doUnlinkOldFn = function () {};
+
+        $doUnlinkNewFn = $doUnlinkOldFn = function () {};//do nothing functions.
+
         if ($uploadedFilePath) {
             $oldFile = upload_path($resource->path);
             $doUnlinkOldFn = function () use ($oldFile) {

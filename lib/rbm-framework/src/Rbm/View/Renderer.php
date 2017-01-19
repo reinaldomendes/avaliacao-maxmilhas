@@ -2,12 +2,32 @@
 
 namespace Rbm\View;
 
+use Rbm\Di\Di;
+use Closure;
+
 class Renderer
 {
-    /*
-    * do not use inside vies scripts
-    */
+    /**
+     * do not use inside vies scripts.
+     * @var mixed
+     */
     protected $__extends__ = null;
+
+    /**
+     * do not use inside vies scripts.
+     * @var Closure
+     */
+    protected $__view_creator__;
+
+    /**
+     * set di container.
+     * @var callable
+     */
+    public function __construct(Closure $viewCreatorCallback)
+    {
+        $this->__view_creator__ = $viewCreatorCallback;
+    }
+
     /**
      * Render view script.
      * @param Rbm\View\View $view
@@ -28,10 +48,12 @@ class Renderer
         extract($view->getVars());
 
         $result = include $view->locateScriptFile();
-        if (!is_scalar($result)) {
+
+        if (is_string($result)) {
             echo $result;
         }
         $result = ob_get_clean();
+
         if (is_callable($this->__extends__)) {
             $result = call_user_func_array($this->__extends__, [$result]);
         }
@@ -60,13 +82,17 @@ class Renderer
      */
     public function partial($name, array $params = [])
     {
-        return  di()->make('View', [$name])->with($params);
+        $fn = $this->__view_creator__;
+
+        return  $fn($name)->with($params);
     }
 
     public function extend($name, array $params = [])
     {
-        $this->__extends__ = function ($result) use ($name, $params) {
-            return di()->make('View', [$name])->with(array_merge($params, ['content' => $result]));
+        $fn = $this->__view_creator__;
+        $this->__extends__ = function ($result) use ($name, $params, $fn) {
+
+            return $fn($name)->with(array_merge($params, ['content' => $result]));
         };
     }
 }
