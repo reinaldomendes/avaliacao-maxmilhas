@@ -67,7 +67,6 @@ $di->bindSingleton('PDO', function () {
         ';dbname='.$dbParams['schema'];
 
     return new \PDO($dsn, $dbParams['username'], $dbParams['password']);
-
 });
 
 /*

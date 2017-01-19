@@ -1,5 +1,7 @@
 <?php
 
-$this->get('/', function () {
-  return 'ok';
-});
+if (isset($this)) {
+    $this->get('/', function () {
+    return 'ok';
+  });
+}

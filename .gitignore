@@ -1,3 +1,4 @@
 /vendor
 /tmp/report
 .env
+/public/uploads/

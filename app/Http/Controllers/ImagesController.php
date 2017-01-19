@@ -6,7 +6,7 @@ class ImagesController
 {
     public function index($request, $response)
     {
-        $collection = di()->make('PhotoRepository')->getList([], 'id desc');
+        $collection = di()->make('PhotoRepository')->getList([], ['id' => 'desc']);
 
         return view('images.index')
             ->with('collection', $collection);
@@ -25,18 +25,22 @@ class ImagesController
 
     public function store($request, $response)
     {
-        $uploadedFilePath = $this->handleUpload('file');
-        if ($uploadedFilePath) {
+        if ($this->hasUpload('file')) {
+            $uploadedFilePath = $this->handleUpload('file');
             $repository = di()->make('PhotoRepository');
             $resource = $repository->newInstance($request->getPostParams());
             $pathArray = explode(upload_path(), $uploadedFilePath);
             $path = implode('', $pathArray);
             $resource->image = $path;
-            $repository->save($resource);
-            $response->setRedirect('/images');
-            session()->flash()->add('success', 'Imagem cadastrada com sucesso!');
+            if ($repository->save($resource)) {
+                $response->setRedirect('/images');
+                session()->flash()->add('success', 'Imagem cadastrada com sucesso!');
+            } else {
+                unlink(upload_path($path)); //remove a imagem enviada
+                session()->flash()->add('danger', 'Ocorreu um erro ao salvar a imagem.');
+            }
         } else {
-            session()->flash()->add('danger', 'Ocorreu um erro ao cadastrar a imagem.');
+            session()->flash()->add('danger', 'O upload é necessário para cadastar a imagem.');
             $response->setRedirect('/images/create');
         }
     }
@@ -58,35 +62,34 @@ class ImagesController
         }
         $resource->id = $request->getParam('id');
 
-        $uploadedFilePath = $this->handleUpload('file');
+        $unlinkNewUploadedImageFn = $unlinkOldImageFn = function () {};//do nothing functions.
 
-        $doUnlinkNewFn = $doUnlinkOldFn = function () {};//do nothing functions.
-
-        if ($uploadedFilePath) {
+        if ($this->hasUpload('file')) {
+            $uploadedFilePath = $this->handleUpload('file');
             $oldFile = upload_path($resource->image);
-            $doUnlinkOldFn = function () use ($oldFile) {
+
+            $unlinkOldImageFn = function () use ($oldFile) {
                 if (is_file($oldFile)) {
                     unlink($oldFile);
                 }
             };
-            $doUnlinkNewFn = function () use ($uploadedFilePath) {
+            $unlinkNewUploadedImageFn = function () use ($uploadedFilePath) {
                 if (is_file($uploadedFilePath)) {
                     unlink($uploadedFilePath);
                 }
             };
-
             $pathArray = explode(upload_path(), $uploadedFilePath);
             $path = implode('', $pathArray);
             $resource->image = $path;
         }
 
         if ($repository->save($resource)) {
-            $doUnlinkOldFn();
+            $unlinkOldImageFn();
             $response->setRedirect('/images');
             session()->flash()->add('success', 'Imagem alterada com sucesso!');
         } else {
             session()->flash()->add('danger', 'Não foi possível alterar a imagem.');
-            $doUnlinkNewFn();
+            $unlinkNewUploadedImageFn();
             $response->setRedirect("/images/{$resource->id}/edit");
         }
     }
@@ -111,6 +114,10 @@ class ImagesController
         $response->setRedirect('/images');
     }
 
+    protected function hasUpload($fieldName)
+    {
+        return isset($_FILES[$fieldName]);
+    }
     /**
      * Handle upload file.
      */
@@ -128,7 +135,7 @@ class ImagesController
             $uploadedFilePath = implode('/', [rtrim($uploadDir, '/'), $newName]);
             if (move_uploaded_file($fileParam['tmp_name'], $uploadedFilePath)) {
                 return $uploadedFilePath;
-            };
+            }
         }
 
         return;

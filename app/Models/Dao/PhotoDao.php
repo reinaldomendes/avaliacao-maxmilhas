@@ -5,6 +5,7 @@
 namespace App\Models\Dao;
 
 use PDO;
+use App\Models\Dao\Exception as DaoException;
 
 /**
  * @class PhotoDao*
@@ -34,45 +35,48 @@ class PhotoDao
     /**
      * @param PDO $connection
      */
-    public function __construct(PDO $connection)
+    public function __construct($connection)
     {
         $this->conn = $connection;
+    }
+
+    public function getTable()
+    {
+        return $this->table;
     }
 
     /**
      *
      **/
-    public function getList(array $where = [], $order = null, $limit = null, $offset = null)
+    public function getList(array $where = [], array $order = null, $limit = null, $offset = null)
     {
         $where = $this->filterData($where);
 
         $whereParamValues = [];
         $whereArray = $this->buildWhereClause($where);
         $orderClause = null;
-        if ($order) {
-            /*@todo avoid injection here*/
-            $orderClause = "order by {$order}";
-        }
-        $limitClause = null;
-        if ($limit) {
-            $limit = (int) $limit; #avoid sql injection
-            $limitClause = "limit {$limit}";
-            if ($offset) {
-                $offset = (int) $offset;
-                $limitClause .= ", {$offset}";
-            }
-        }
+        $orderClause = $this->buildOrderClause($order);
+
+        $limitClause = $this->buildLimitOffsetClause($limit, $offset);
 
         $sql = "SELECT * from `{$this->table}` {$whereArray['where']} {$orderClause} {$limitClause}";
 
         $statement = $this->conn->prepare($sql);
-        $statement->execute($whereArray['values']);
 
-        return  $statement->fetchAll();
+        if (!$statement->execute($whereArray['values']) && $statement->errorCode()) {
+            throw new DaoException(implode(' ', $statement->errorInfo()));
+        }
+
+        return  $statement->fetchAll(PDO::FETCH_ASSOC);
     }
     public function find($id)
     {
-        return current($this->getList(['id' => $id]));
+        $result = current($this->getList(['id' => $id]));
+        if (!$result) {
+            return;
+        }
+
+        return $result;
     }
     public function insert(array $data)
     {
@@ -89,11 +93,12 @@ class PhotoDao
 
         $sql = "INSERT INTO `{$this->table}`($fields) values($parameters)";
         $statement = $this->conn->prepare($sql);
-        if ($statement->execute($paramValues)) {
-            return $this->conn->lastInsertId();
+
+        if (!$statement->execute($paramValues) && $statement->errorCode()) {
+            throw new DaoException(implode(' ', $statement->errorInfo()));
         }
 
-        return;
+        return $this->conn->lastInsertId();
     }
     public function update(array $data, $where)
     {
@@ -114,11 +119,11 @@ class PhotoDao
         $statement = $this->conn->prepare($sql);
         $paramValues = array_merge($paramValues, $whereArray['values']);
 
-        if ($statement->execute($paramValues)) {
-            return true;
+        if (!$statement->execute($paramValues) && $statement->errorCode()) {
+            throw new DaoException(implode(' ', $statement->errorInfo()));
         }
 
-        return;
+        return true;
     }
 
     public function delete($where)
@@ -127,12 +132,13 @@ class PhotoDao
         $whereArray = $this->buildWhereClause($where);
         $sql = "DELETE FROM `{$this->table}` {$whereArray['where']}";
         $statement = $this->conn->prepare($sql);
+        $paramValues = $whereArray['values'];
 
-        if ($statement->execute($whereArray['values'])) {
-            return true;
+        if (!$statement->execute($paramValues) && $statement->errorCode()) {
+            throw new DaoException(implode(' ', $statement->errorInfo()));
         }
 
-        return;
+        return true;
     }
 
     /***************************************************************************
@@ -147,7 +153,7 @@ class PhotoDao
     {
         if (null === $this->attributes) {
             $this->attributes = [];
-            $metadata = $this->getMetdata();
+            $metadata = $this->getMetadata();
             foreach ($metadata as $value) {
                 $value = array_change_key_case($value, CASE_LOWER);
                 $this->attributes[$value['field']] = $value['field'];
@@ -157,10 +163,10 @@ class PhotoDao
         return array_intersect_key($data, $this->attributes);
     }
 
-    protected function getMetdata()
+    protected function getMetadata()
     {
         if (null === $this->metadata) {
-            $this->metadata = $this->conn->query("describe `{$this->table}`")->fetchAll();
+            $this->metadata = $this->conn->query("DESCRIBE `{$this->table}`")->fetchAll(PDO::FETCH_ASSOC);
         }
 
         return $this->metadata;
@@ -182,5 +188,39 @@ class PhotoDao
         }
 
         return ['where' => $whereClause, 'values' => $whereParamValues];
+    }
+
+    protected function buildLimitOffsetClause($limit = null, $offset = null)
+    {
+        if (!$limit) {
+            return;
+        }
+
+        $limit = (int) $limit; #avoid sql injection
+            $limitClause = "LIMIT {$limit}";
+        if ($offset) {
+            $offset = (int) $offset;
+            $limitClause .= ", {$offset}";
+        }
+
+        return $limitClause;
+    }
+
+    protected function buildOrderClause(array $order = null)
+    {
+        if (!$order) {
+            return;
+        }
+        $order = $this->filterData($order);
+        array_walk($order, function (&$v, $k) {
+            $v = strtoupper($v);
+            if ($v !== 'DESC') {
+                $v = 'ASC';
+            }
+            $v = "`$k` $v";
+        });
+        $order = implode(', ', $order);
+
+        return "ORDER BY {$order}";
     }
 }
