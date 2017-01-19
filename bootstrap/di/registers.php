@@ -18,6 +18,12 @@ $di->bind('Router', function () use ($di) {
   return $result;
 });
 
+$di->bindSingleton('Session', function ($scope = null) use ($di) {
+  $result = new Rbm\Http\Session($scope);
+
+  return $result;
+});
+
 /*
 * Make a dispatcher class
 */

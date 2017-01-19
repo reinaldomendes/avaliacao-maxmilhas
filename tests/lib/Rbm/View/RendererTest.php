@@ -66,10 +66,22 @@ class RendererTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function a_render_should_works_a_return_inside_ascript()
+    public function a_render_should_works_a_return_inside_a_script()
     {
         $renderer = $this->create();
         $result = $renderer->render($this->createView('return.index'));
         $this->assertEquals('<div>RETURN</div>', preg_replace("@[\s\n\r]+@", '', $result));
+    }
+    /**
+     * @test
+     */
+    public function a_render_should_call_default_php_error_when_not_a_notice()
+    {
+        $mock = $this->getMock(StdClass::class, ['__invoke']);
+        $mock->method('__invoke');
+        set_error_handler($mock);
+        $renderer = $this->create();
+        $result = $renderer->render($this->createView('php-error.index'));
+        $this->assertTrue(true);
     }
 }

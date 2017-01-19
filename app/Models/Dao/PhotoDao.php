@@ -50,12 +50,15 @@ class PhotoDao
         $whereArray = $this->buildWhereClause($where);
         $orderClause = null;
         if ($order) {
+            /*@todo avoid injection here*/
             $orderClause = "order by {$order}";
         }
         $limitClause = null;
         if ($limit) {
+            $limit = (int) $limit; #avoid sql injection
             $limitClause = "limit {$limit}";
             if ($offset) {
+                $offset = (int) $offset;
                 $limitClause .= ", {$offset}";
             }
         }

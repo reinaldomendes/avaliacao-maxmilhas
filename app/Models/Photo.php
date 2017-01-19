@@ -6,11 +6,15 @@ use ArrayObject;
 
 class Photo extends ArrayObject
 {
+    /**
+     */
     protected $fields = [];
+
     public function __construct($data)
     {
         parent::__construct($data);
     }
+
     public function toArray()
     {
         return $this->getArrayCopy();
@@ -18,7 +22,7 @@ class Photo extends ArrayObject
 
     public function getImageUrl()
     {
-        return upload_url($this->path);
+        return $this->image ? upload_url($this->image) : null;
     }
 
     public function __get($name)
@@ -29,6 +33,7 @@ class Photo extends ArrayObject
 
         return;
     }
+
     public function __set($name, $value)
     {
         $this[$name] = $value;

@@ -16,7 +16,11 @@ $params = [
   ],
   'actions' => [
     'edit'   => ['url' => '/images/:id/edit'],
-    'destroy' => ['url' => '/images/:id'],
+    'destroy' => ['url' => '/images/:id',
+          'confirm' => function ($model) {
+            return "Quer mesmo excluir imagem '{$model->label}'?";
+          },
+      ],
 
   ],
 ];?>

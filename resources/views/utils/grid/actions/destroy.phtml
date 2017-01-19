@@ -1,6 +1,9 @@
 <?php
   $label = is_array($options) ? $options['label'] : $options;
   $confirm = is_array($options) ? $options['confirm'] : "Deseja realmente excluir o registro '{$model->id}'?";
+  if (is_callable($confirm)) {
+      $confirm = $confirm($model);
+  }
   $url = is_array($options) ? $options['url'] : null;
   $url = str_replace(':id', $model->id, $url);
 ?>

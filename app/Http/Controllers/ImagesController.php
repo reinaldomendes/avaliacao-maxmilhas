@@ -31,10 +31,12 @@ class ImagesController
             $resource = $repository->newInstance($request->getPostParams());
             $pathArray = explode(upload_path(), $uploadedFilePath);
             $path = implode('', $pathArray);
-            $resource->path = $path;
+            $resource->image = $path;
             $repository->save($resource);
             $response->setRedirect('/images');
+            session()->flash()->add('success', 'Imagem cadastrada com sucesso!');
         } else {
+            session()->flash()->add('danger', 'Ocorreu um erro ao cadastrar a imagem.');
             $response->setRedirect('/images/create');
         }
     }
@@ -61,7 +63,7 @@ class ImagesController
         $doUnlinkNewFn = $doUnlinkOldFn = function () {};//do nothing functions.
 
         if ($uploadedFilePath) {
-            $oldFile = upload_path($resource->path);
+            $oldFile = upload_path($resource->image);
             $doUnlinkOldFn = function () use ($oldFile) {
                 if (is_file($oldFile)) {
                     unlink($oldFile);
@@ -75,12 +77,15 @@ class ImagesController
 
             $pathArray = explode(upload_path(), $uploadedFilePath);
             $path = implode('', $pathArray);
-            $resource->path = $path;
+            $resource->image = $path;
         }
+
         if ($repository->save($resource)) {
             $doUnlinkOldFn();
             $response->setRedirect('/images');
+            session()->flash()->add('success', 'Imagem alterada com sucesso!');
         } else {
+            session()->flash()->add('danger', 'Não foi possível alterar a imagem.');
             $doUnlinkNewFn();
             $response->setRedirect("/images/{$resource->id}/edit");
         }
@@ -92,10 +97,15 @@ class ImagesController
         $repository = di()->make('PhotoRepository');
         $photo = $repository->find($id);
         if ($photo) {
-            $imagePath = upload_path($photo->path);
+            $imagePath = upload_path($photo->image);
             if ($repository->delete($photo) && is_file($imagePath)) {
                 unlink($imagePath);
+                session()->flash()->add('success', 'Imagem excluída com sucesso!');
+            } else {
+                session()->flash()->add('danger', 'Ocorreu um erro ao excluir a imagem.');
             }
+        } else {
+            session()->flash()->add('warning', 'Não foi encontrar a imagem.');
         }
 
         $response->setRedirect('/images');

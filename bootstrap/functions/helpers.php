@@ -18,6 +18,19 @@ if (!function_exists('view')) {
     }
 }
 
+if (!function_exists('request')) {
+    function request()
+    {
+        return di()->make('Request', [$name]);
+    }
+}
+if (!function_exists('session')) {
+    function session()
+    {
+        return di()->make('Session');
+    }
+}
+
 /*view helpers functions*/
 
 if (!function_exists('upload_url')) {
