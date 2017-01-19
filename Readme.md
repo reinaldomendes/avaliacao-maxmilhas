@@ -33,4 +33,4 @@
 
 
 ## Aplicação
-A galeria será exibida na home page.
+* A galeria será exibida na url '/' caso haja imagens cadastradas.
