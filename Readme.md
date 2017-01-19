@@ -2,7 +2,7 @@
 
 
 
-## instalação
+## Instalação
 * Copie o arquivo */.env.exapmple* para */.env* e configure o a conexão com o banco de dados
 * Importe o arquivo *database/sql/inicial.sql* para o banco de dados
 
@@ -19,21 +19,19 @@
 
 * Acesse no navegador http://localhost:8000
 
-
-
 ## Test Unit
 
 * *x-debug* é necessário para execução dos testes
 * Os logs "CodeCoverage" serão salvos na pasta /tmp/report
-* É necessário configurar a conexão para a banco de teste no arquivo .env
+* É necessário configurar a conexão para a banco de teste no arquivo *.env*
 
 ```bash
   cd PROJECT_FOLDER
   phpunit
 ```
 
-## componentes utilizados.
-* vlucas/phpdotenv para carregar configurações dos arquivos .env
+## Componentes utilizados.
+* *vlucas/phpdotenv* para carregar configurações dos arquivos *.env*
 * bower - foi utilizado para instalar as libs(jQuery, Bootstrap)
 
 ## Aplicação
