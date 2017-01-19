@@ -39,6 +39,7 @@
 
 
 
+
 ### Pastas e arquivos
 
   * server.php  - Arquivo utilizado para execução do servidor imbutido do PHP.
@@ -57,22 +58,22 @@
   * bootstrap/functions/helpers.php # funções utilitárias.
 
 #### database
-    Arquivos relacionados ao banco de dados.
-    * database/config/connection.php # conexções com o banco de dados
-    * database/sql/ # arquivos sql
+    Arquivos relacionados ao banco de dados.    
+  * database/config/connection.php # conexões com o banco de dados
+  * database/sql/ # arquivos sql
 ### lib
-    Bibliotecas
-    * lib/rbm-framework # Frameowrk MVC inspirado em Laravel, desenvolvido para esta avaliação.
+      Bibliotecas
+  * lib/rbm-framework # Frameowrk MVC inspirado em Laravel, desenvolvido para esta avaliação.
 
 ### public
-    Diretório público, caso utilize um servidor web como apache, esta é pasta que deveria ser exposta.
+      Diretório público, caso utilize um servidor web como apache, esta é pasta que deveria ser exposta.
     * public/assets - arquivos css e js da aplicação
     * public/uploads - Local onde serão salvas as imagens
 ### resources  
-    Recursos da aplicação, aqui se encontam as views, se tivesse utilizado
-    pré-processadores css e js, os aquivos (scss,less,js) ficariam aqui também.
+      Recursos da aplicação, aqui se encontam as views, se tivesse utilizado
+      pré-processadores css e js, os aquivos (scss,less,js) ficariam aqui também.
     * views - arquivos de layout e views da aplicação a extensão utilizada foi .phtml
 ### tests
-    Pasta onde estão os testes unitários
+      Pasta onde estão os testes unitários
 ## tmp
-    Pasta de arquivos temporários.
+      Pasta de arquivos temporários.
