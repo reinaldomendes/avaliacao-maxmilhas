@@ -30,3 +30,7 @@
   cd PROJECT_FOLDER
   phpunit
 ```
+
+
+## Aplicação
+A galeria será exibida na home page.

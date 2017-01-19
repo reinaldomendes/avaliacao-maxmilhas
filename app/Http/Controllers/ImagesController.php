@@ -101,8 +101,10 @@ class ImagesController
         $photo = $repository->find($id);
         if ($photo) {
             $imagePath = upload_path($photo->image);
-            if ($repository->delete($photo) && is_file($imagePath)) {
-                unlink($imagePath);
+
+            if ($repository->delete($photo)) {
+                is_file($imagePath) && unlink($imagePath);
+
                 session()->flash()->add('success', 'Imagem excluída com sucesso!');
             } else {
                 session()->flash()->add('danger', 'Ocorreu um erro ao excluir a imagem.');
@@ -116,7 +118,7 @@ class ImagesController
 
     protected function hasUpload($fieldName)
     {
-        return isset($_FILES[$fieldName]);
+        return isset($_FILES[$fieldName]) && $_FILES[$fieldName]['size'] > 0;
     }
     /**
      * Handle upload file.

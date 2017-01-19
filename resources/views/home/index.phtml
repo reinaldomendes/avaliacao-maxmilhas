@@ -31,4 +31,8 @@ $this->extend('layouts.app');
       <span class="sr-only">Next</span>
     </a>
   </div>
+<?php else:?>
+  <div class="alert alert-warning">
+    Ainda não há imagens cadastradas acesse <a href="/images">Gerenciar Imagens</a> para cadastrar suas imagens.
+  </div>
 <?php endif;?>
