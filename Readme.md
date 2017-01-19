@@ -4,7 +4,7 @@
 
 ## instalação
 * Copie o arquivo */.env.exapmple* para */.env* e configure o a conexão com o banco de dados
-* Execute o arquivo inicial.sql  que pode ser encontrado em */database/sql*
+* Importe o arquivo *database/sql/inicial.sql* para o banco de dados
 
 
 
