@@ -41,16 +41,16 @@
 
 ### Pastas e arquivos
 
-* server.php  - Arquivo utilizado para execução do servidor imbutido do PHP.
+  * server.php  - Arquivo utilizado para execução do servidor imbutido do PHP.
 
 #### app
-  Contém as classes com a regra da aplicação.
+    Contém as classes com a regra da aplicação.
   * app/Http/route.php # arquivo de rotas
   * app/Http/controllers # Diretório dos controllers
   * app/models/ # Logica de interação com o banco de dados
 
 #### bootstrap
-  Contém arquivos necessários para inicialização da aplicação.
+    Contém arquivos necessários para inicialização da aplicação.
   * bootstrap/app.php #contém a logica para execução das rotas e carregamento do controller
   * bootstrap/di/registers.php # Neste arquivo é realizado os "binds" para criação
             objetos através do dependency injection container.
