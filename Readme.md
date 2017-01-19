@@ -5,14 +5,14 @@
 ## Instalação
 * Copie o arquivo */.env.exapmple* para */.env* e configure o a conexão com o banco de dados
 * Importe o arquivo *database/sql/inicial.sql* para o banco de dados
+* Execute o comando `composer install` para instalar as dependencias.
 
 
 
 ## Inicializando a aplicação.
 
 ```bash
-  cd PROJECT_FOLDER
-  composer install
+  cd PROJECT_FOLDER  
   php -S localhost:8000 server.php
   ```
 
