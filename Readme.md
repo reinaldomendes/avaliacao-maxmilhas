@@ -3,7 +3,7 @@
 
 
 ## Instalação
-* Copie o arquivo */.env.exapmple* para */.env* e configure o a conexão com o banco de dados
+* Copie o arquivo */.env.exapmple* para */.env* e configure a conexão com o banco de dados
 * Importe o arquivo *database/sql/inicial.sql* para o banco de dados
 * Execute o comando `composer install` para instalar as dependencias.
 
